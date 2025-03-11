@@ -6,7 +6,7 @@ function Banner() {
 	return (
         <div className='bg-banner'>
             <img src={left_dice} alt='Dé' className='bg-dice' />
-            <h1 className=''>Les jeux de société</h1>
+            <h1 className=''>LES JEUX DE SOCIÉTÉ</h1>
             <img src={right_dice} alt='Dé' className='bg-dice' />
         </div>
     )
