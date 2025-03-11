@@ -1,11 +1,11 @@
 import GameItem from "./GameItem"
-import "../styles/layout"
+import Banner from "./Banner"
+import "../styles/Layout.css"
 
 function App() {
     return(
-        <div className="bd-layout-inner">
-            <h1>Bienvenue</h1>
-            <GameItem />
+        <div className="bg-layout-inner">
+            <Banner />
         </div>
     )
 }

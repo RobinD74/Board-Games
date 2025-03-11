@@ -2,7 +2,7 @@ import '../styles/Footer.css'
 
 function Footer() {
 	return (
-		<footer className='bd-footer'>
+		<footer className='bg-footer'>
 			&copy RD
 		</footer>
 	)
