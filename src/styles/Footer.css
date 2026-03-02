@@ -1,3 +1,16 @@
 .bg-footer {
-    color: black
+    background-color: #873600;
+    width: 100vw;
+    height: 5vh;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    z-index: 10;
+}
+
+.bg-fo-div {
+    color: #1c140c;
+    margin-right: 1vw;
 }
