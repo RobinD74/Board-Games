@@ -1,0 +1,272 @@
+/* ── Games Section ── */
+.bg-games-section {
+    width: 100%;
+    padding: 30px 40px 80px;
+    box-sizing: border-box;
+}
+
+.bg-games-section h2 {
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.8rem;
+    color: #1c140c;
+    margin-bottom: 24px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* ── Card Grid ── */
+.bg-games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* ── Single Card ── */
+.bg-game-card {
+    background: linear-gradient(145deg, #fdf2e9, #f5cba7);
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.bg-game-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #873600, #dc7633, #873600);
+    border-radius: 16px 16px 0 0;
+    z-index: 2;
+}
+
+.bg-game-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Image Area ── */
+.bg-game-image-area {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    position: relative;
+}
+
+.bg-game-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.bg-game-card:hover .bg-game-image {
+    transform: scale(1.05);
+}
+
+.bg-game-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #873600 0%, #dc7633 50%, #f5cba7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.placeholder-icon {
+    font-size: 3rem;
+    opacity: 0.6;
+    filter: grayscale(0.3);
+}
+
+/* ── Card Content ── */
+.bg-game-header {
+    padding: 16px 18px 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* ── Card Title ── */
+.bg-game-card-title {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1c140c;
+    line-height: 1.3;
+    flex: 1;
+}
+
+/* ── Difficulty Badge ── */
+.bg-game-difficulty-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.difficulty-beginner {
+    background-color: #27ae60;
+    color: #fff;
+}
+
+.difficulty-intermediate {
+    background-color: #f39c12;
+    color: #fff;
+}
+
+.difficulty-advanced {
+    background-color: #e67e22;
+    color: #fff;
+}
+
+.difficulty-expert {
+    background-color: #c0392b;
+    color: #fff;
+}
+
+.difficulty-default {
+    background-color: #7f8c8d;
+    color: #fff;
+}
+
+/* ── Genre Tags ── */
+.bg-game-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 18px 0;
+}
+
+.bg-game-tag {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+}
+
+.genre-tag {
+    background-color: #873600;
+    color: #fdf2e9;
+}
+
+.subgenre-tag {
+    background-color: transparent;
+    color: #873600;
+    border: 1.5px solid #873600;
+}
+
+/* ── Card Info Rows ── */
+.bg-game-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 12px 18px 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.83rem;
+    color: #4a3520;
+}
+
+.bg-game-card-info > span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.bg-game-card-info .info-icon {
+    font-size: 0.9rem;
+    min-width: 18px;
+    text-align: center;
+}
+
+.bg-game-card-info .info-label {
+    font-weight: 600;
+    color: #873600;
+    min-width: 62px;
+}
+
+/* ── Comment ── */
+.bg-game-comment {
+    padding: 10px 18px 16px;
+    margin-top: 6px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.8rem;
+    color: #5a3e28;
+    font-style: italic;
+    line-height: 1.45;
+    border-top: 1px solid rgba(135, 54, 0, 0.15);
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.bg-game-comment .comment-icon {
+    flex-shrink: 0;
+    font-size: 0.85rem;
+    margin-top: 1px;
+}
+
+/* Add bottom padding for cards without comment */
+.bg-game-card-info:last-child {
+    padding-bottom: 16px;
+}
+
+/* ── Loading & Error ── */
+.bg-games-loading,
+.bg-games-error {
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.1rem;
+    color: #1c140c;
+    padding: 60px 20px;
+}
+
+.bg-games-error {
+    color: #922b21;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .bg-games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 18px;
+    }
+
+    .bg-game-image-area {
+        height: 150px;
+    }
+}
+
+@media (max-width: 500px) {
+    .bg-games-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .bg-games-section {
+        padding: 20px 16px 70px;
+    }
+
+    .bg-game-image-area {
+        height: 140px;
+    }
+}
