@@ -86,6 +86,11 @@ def extract_from_sheets() -> pd.DataFrame:
 def transform(df: pd.DataFrame) -> pd.DataFrame:
     log.info("Transformation des données...")
 
+    # Cas Sheet vide ou colonnes manquantes
+    if df.empty or not all(col in df.columns for col in REQUIRED_COLUMNS):
+        log.warning("  Sheet vide ou colonnes manquantes — pipeline arrêtée proprement.")
+        return pd.DataFrame(columns=SHEET_COLUMNS)
+
     # Remplacer les cellules vides par None
     df = df.replace("", None)
 
@@ -118,6 +123,9 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
 
 # ─── Load ────────────────────────────────────────────────────────────────────
 def load_to_supabase(df: pd.DataFrame) -> None:
+    if df.empty:
+        log.info("  Aucune donnée à charger.")
+        return
     log.info("Connexion à Supabase...")
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
