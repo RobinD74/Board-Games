@@ -25,6 +25,10 @@
       "react-app/jest"
     ]
   },
+  "overrides": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
