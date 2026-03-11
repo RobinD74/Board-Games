@@ -1,0 +1,32 @@
+name: ETL Google Sheets → Supabase
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # Tous les jours à 6h00 UTC (8h Paris)
+  workflow_dispatch:        # Déclenchement manuel possible depuis Github
+
+jobs:
+  etl:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer les dépendances
+        run: |
+          pip install gspread pandas supabase google-auth
+
+      - name: Lancer la pipeline ETL
+        env:
+          SUPABASE_URL:             ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY:     ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GOOGLE_SHEET_ID:          ${{ secrets.GOOGLE_SHEET_ID }}
+          GOOGLE_CREDENTIALS_JSON:  ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+        run: |
+          python etl_sheets_to_supabase.py
