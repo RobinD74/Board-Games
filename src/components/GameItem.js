@@ -1,9 +1,9 @@
 import '../styles/GameItem.css';
 
 const difficultyColors = {
-    'Débutant': 'difficulty-beginner',
-    'Intermédiaire': 'difficulty-intermediate',
-    'Avancé': 'difficulty-advanced',
+    'Debutant': 'difficulty-beginner',
+    'Intermediaire': 'difficulty-intermediate',
+    'Avance': 'difficulty-advanced',
     'Expert': 'difficulty-expert',
 };
 
@@ -21,9 +21,10 @@ function GameItem({ game }) {
     const genres = [game.genre_gam, game.genre2_gam, game.genre3_gam].filter(Boolean);
     const subgenres = [game.subgenre_gam, game.subgenre2_gam, game.subgenre3_gam].filter(Boolean);
 
-    const playerRange = game.max_player_gam
-        ? `${game.min_player_gam}–${game.max_player_gam}`
-        : `${game.min_player_gam}`;
+    const playerRange =
+        game.max_player_gam && game.min_player_gam !== game.max_player_gam
+            ? `${game.min_player_gam}–${game.max_player_gam}`
+            : `${game.min_player_gam}`;
 
     return (
         <div className="bg-game-card">

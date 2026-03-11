@@ -198,19 +198,23 @@
 /* ── Image Area ── */
 .bg-game-image-area {
     width: 100%;
-    height: 190px;
+    height: 260px;
     overflow: hidden;
     position: relative;
+    background: linear-gradient(145deg, #0d0905 0%, #1a1008 50%, #0d0905 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Gradient overlay on image */
+/* Subtle gradient overlay on image bottom */
 .bg-game-image-area::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 50%;
+    height: 35%;
     background: linear-gradient(to top, var(--bg-dark-3), transparent);
     pointer-events: none;
     z-index: 1;
@@ -219,15 +223,17 @@
 .bg-game-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
-    transition: transform 0.5s ease;
-    filter: brightness(0.85) saturate(1.1);
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    filter: brightness(0.9) saturate(1.1);
+    padding: 8px;
+    box-sizing: border-box;
 }
 
 .bg-game-card:hover .bg-game-image {
-    transform: scale(1.08);
-    filter: brightness(0.95) saturate(1.2);
+    transform: scale(1.06);
+    filter: brightness(1) saturate(1.2);
 }
 
 .bg-game-image-placeholder {
@@ -240,8 +246,8 @@
 }
 
 .placeholder-icon {
-    font-size: 3rem;
-    opacity: 0.4;
+    font-size: 3.5rem;
+    opacity: 0.35;
     filter: grayscale(0.3);
 }
 
@@ -469,7 +475,7 @@
     }
 
     .bg-game-image-area {
-        height: 160px;
+        height: 220px;
     }
 
     .bg-games-section {
@@ -488,7 +494,7 @@
     }
 
     .bg-game-image-area {
-        height: 180px;
+        height: 240px;
     }
 
     .bg-games-header {
