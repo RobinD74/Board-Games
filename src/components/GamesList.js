@@ -18,7 +18,7 @@ function GamesList() {
                 setLoading(false);
             })
             .catch((err) => {
-                console.warn('Supabase fetch failed, using sample data:', err.message);
+                console.warn('Supabase fetch failed, using sample data.');
                 setGames(sampleGames);
                 setError(null);
                 setLoading(false);
