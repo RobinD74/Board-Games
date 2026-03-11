@@ -102,7 +102,7 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
         log.warning(f"  {dropped} ligne(s) ignorée(s) — champs obligatoires manquants.")
 
     # Strip des espaces sur les colonnes texte
-    str_cols = df.select_dtypes(include="object").columns
+    str_cols = df.select_dtypes(include=["object", "str"]).columns
     df[str_cols] = df[str_cols].apply(lambda c: c.str.strip() if c.dtype == "object" else c)
 
     # Cast des colonnes numériques
@@ -136,8 +136,12 @@ def load_to_supabase(df: pd.DataFrame) -> None:
         for row in existing.data
     }
 
-    records = df.where(pd.notnull(df), None).to_dict(orient="records")
-
+    df = df.astype(object).where(pd.notnull(df), None)
+    records = df.to_dict(orient="records")
+    records = [
+        {k: (None if isinstance(v, float) and pd.isna(v) else v) for k, v in row.items()}
+        for row in records
+    ]
     new_rows    = []
     update_rows = []
 
