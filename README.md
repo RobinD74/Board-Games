@@ -1,70 +1,64 @@
-# Getting Started with Create React App
+# 🎲 Board Games Collection
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A premium web application to browse and filter a personal collection of board games. Built with a focus on aesthetics and automated data management.
 
-## Available Scripts
+![Preview](https://raw.githubusercontent.com/RobinD74/Board-Games/main/public/dice.png)
 
-In the project directory, you can run:
+## ✨ Features
 
-### `yarn start`
+- **Premium UI**: Dark mode experience with glassmorphism, smooth animations, and modern typography.
+- **Smart Filtering**: Search by name and filter by difficulty or genre.
+- **Automated ETL**: Daily synchronization from Google Sheets to Supabase via GitHub Actions.
+- **Secure by Design**: Implemented Row Level Security (RLS) and strict Content Security Policy (CSP).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🛠 Tech Stack
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Frontend**: React 19, Vanilla CSS (Custom Design System)
+- **Backend**: Supabase (PostgreSQL + Auth/RLS)
+- **Automation**: Python 3.11, GitHub Actions, Google Sheets API
+- **Deployment**: Vercel
 
-### `yarn test`
+## 🚀 Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
+- Node.js & npm
+- Supabase account
+- Google Service Account (for ETL)
 
-### `yarn build`
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/RobinD74/Board-Games.git
+   cd Board-Games
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up environment variables (`.env.local`):
+   ```env
+   REACT_APP_SUPABASE_URL=your_supabase_url
+   REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+4. Start the development server:
+   ```bash
+   npm start
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🔄 Data Pipeline (ETL)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The project includes a Python-based ETL pipeline (`etl_sheets_to_supabase.py`) that:
+1. **Extracts** data from a Google Sheet.
+2. **Transforms** and validates the data (cleaning, type casting, deduplication).
+3. **Loads** it into Supabase using an upsert logic (based on game name and owner).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+This runs automatically every day at 06:00 UTC via GitHub Actions.
 
-### `yarn eject`
+## 🛡 Security
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **CSP**: Strict headers configured in `vercel.json`.
+- **RLS**: Database access restricted to read-only for anonymous users.
+- **Audit**: Regular security checks performed on dependencies and code patterns.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+Made with ❤️ by [Robin](https://github.com/RobinD74)
