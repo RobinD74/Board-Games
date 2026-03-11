@@ -3,7 +3,9 @@ import '../styles/Footer.css'
 function Footer() {
 	return (
 		<footer className='bg-footer'>
-			&copy RD
+			<div className='bg-fo-div'>
+				Fait avec <span className='footer-heart'>❤️</span> par Robin — {new Date().getFullYear()}
+			</div>
 		</footer>
 	)
 }

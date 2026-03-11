@@ -1,54 +1,17 @@
-export const GameList = [
-    {
-        id: 1,
-        name: 'Uno',
-        genre1: 'Cartes',
-        genre2: null,
-        sousGenre1: null,
-        sousGenre2: null,
-        minJoueurs: 2,
-        maxJoueurs: 10,
-        duree: '30 min',
-        age: 7,
-        diffculte: 1,
-        langue: 'Français',
-        commentaire: null,
-        image: null,
-        editeur: null,
-        proprietaire: null
-    },{
-        id: 2,
-        name: 'R6',
-        genre1: 'Cartes',
-        genre2: null,
-        sousGenre1: null,
-        sousGenre2: null,
-        minJoueurs: 2,
-        maxJoueurs: 10,
-        duree: '30 min',
-        age: 7,
-        diffculte: 1,
-        langue: 'Français',
-        commentaire: null,
-        image: null,
-        editeur: null,
-        proprietaire: null
-    },{
-        id: 3,
-        name: 'Pokemon',
-        genre1: 'Cartes',
-        genre2: null,
-        sousGenre1: null,
-        sousGenre2: null,
-        minJoueurs: 2,
-        maxJoueurs: 10,
-        duree: '30 min',
-        age: 7,
-        diffculte: 1,
-        langue: 'Français',
-        commentaire: null,
-        image: null,
-        editeur: null,
-        proprietaire: null
+import { supabase } from '../supabaseClient';
+
+/**
+ * Fetch all games from the Supabase `games_gam` table.
+ * Returns an array of game objects.
+ */
+export async function fetchGames() {
+    const { data, error } = await supabase
+        .from('games_gam')
+        .select('*');
+
+    if (error) {
+        console.error('Error fetching games:', error);
+        throw error;
     }
-]
+    return data;
+}
