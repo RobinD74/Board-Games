@@ -103,7 +103,7 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
 
     # Strip des espaces sur les colonnes texte
     str_cols = df.select_dtypes(include=["object", "str"]).columns
-    df[str_cols] = df[str_cols].apply(lambda c: c.str.strip() if c.dtype == "object" else c)
+    df[str_cols] = df[str_cols].apply(lambda c: c.map(lambda x: x.strip() if isinstance(x, str) else x))
 
     # Cast des colonnes numériques
     for col in INTEGER_COLUMNS:
