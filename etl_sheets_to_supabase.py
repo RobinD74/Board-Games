@@ -136,6 +136,8 @@ def load_to_supabase(df: pd.DataFrame) -> None:
         for row in existing.data
     }
 
+    df = df.drop(columns=["id_gam"], errors="ignore")
+
     df = df.astype(object).where(pd.notnull(df), None)
     records = df.to_dict(orient="records")
     records = [
