@@ -1,9 +1,9 @@
 import '../styles/GameItem.css';
 
 const difficultyColors = {
-    'Debutant': 'difficulty-beginner',
-    'Intermediaire': 'difficulty-intermediate',
-    'Avance': 'difficulty-advanced',
+    'Débutant': 'difficulty-beginner',
+    'Intermédiaire': 'difficulty-intermediate',
+    'Avancé': 'difficulty-advanced',
     'Expert': 'difficulty-expert',
 };
 
