@@ -1,7 +1,3 @@
-/**
- * Sample board game data used as fallback when the Supabase API
- * is unavailable or returns an empty result set.
- */
 const sampleGames = [
     {
         id_gam: 1,

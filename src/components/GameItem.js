@@ -28,7 +28,6 @@ function GameItem({ game }) {
 
     return (
         <div className="bg-game-card">
-            {/* Image area */}
             <div className="bg-game-image-area">
                 {game.image_gam ? (
                     <img src={game.image_gam} alt={game.name_gam} className="bg-game-image" />
@@ -39,13 +38,11 @@ function GameItem({ game }) {
                 )}
             </div>
 
-            {/* Title + Difficulty */}
             <div className="bg-game-header">
                 <div className="bg-game-card-title">{game.name_gam}</div>
                 <DifficultyBadge level={game.difficulty_gam} />
             </div>
 
-            {/* Genre tags */}
             {genres.length > 0 && (
                 <div className="bg-game-tags">
                     {genres.map((tag, i) => (
@@ -57,7 +54,6 @@ function GameItem({ game }) {
                 </div>
             )}
 
-            {/* Info rows */}
             <div className="bg-game-card-info">
                 <span>
                     <span className="info-icon">👥</span>
@@ -95,7 +91,6 @@ function GameItem({ game }) {
                 </span>
             </div>
 
-            {/* Comment */}
             {game.comment_gam && (
                 <div className="bg-game-comment">
                     <span className="comment-icon">💬</span>

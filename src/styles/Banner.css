@@ -1,4 +1,3 @@
-/* ── Glassmorphism Banner ── */
 .bg-banner {
   width: 100%;
   padding: 40px 24px 32px;
@@ -17,7 +16,6 @@
   overflow: hidden;
 }
 
-/* Ambient glow behind banner */
 .bg-banner::before {
   content: '';
   position: absolute;
@@ -47,7 +45,6 @@
   pointer-events: none;
 }
 
-/* ── Title Row ── */
 .bg-banner-row {
   display: flex;
   align-items: center;
@@ -70,7 +67,6 @@
   position: relative;
 }
 
-/* Glow effect behind title */
 .bg-banner h1::after {
   content: 'LES JEUX DE SOCIÉTÉ';
   position: absolute;
@@ -85,7 +81,6 @@
   z-index: -1;
 }
 
-/* ── Dice icons ── */
 .bg-dice {
   width: 48px;
   height: auto;
@@ -109,7 +104,6 @@
   }
 }
 
-/* ── Subtitle ── */
 .bg-banner-subtitle {
   font-family: var(--font-body);
   font-size: 0.95rem;
@@ -121,7 +115,6 @@
   opacity: 0.8;
 }
 
-/* ── Separator ── */
 .bg-banner-separator {
   width: 60px;
   height: 2px;
@@ -131,7 +124,6 @@
   opacity: 0.5;
 }
 
-/* ── Responsive ── */
 @media (max-width: 600px) {
   .bg-banner {
     padding: 28px 16px 24px;
