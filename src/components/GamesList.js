@@ -28,7 +28,6 @@ function GamesList() {
     if (loading) return <div className="bg-games-loading">Chargement des jeux…</div>;
     if (error) return <div className="bg-games-error">Erreur : {error}</div>;
 
-    // Extract unique difficulty levels and first genres for filter options
     const difficulties = [...new Set(games.map((g) => g.difficulty_gam).filter(Boolean))].sort();
     const genres = [...new Set(games.map((g) => g.genre_gam).filter(Boolean))].sort();
 
