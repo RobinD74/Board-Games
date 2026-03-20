@@ -145,6 +145,14 @@
     margin: 0 auto;
 }
 
+.bg-game-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    border-radius: var(--radius-lg);
+    outline: none;
+}
+
 .bg-game-card {
     background: var(--bg-surface);
     backdrop-filter: blur(12px);
@@ -164,6 +172,7 @@
     overflow: hidden;
     opacity: 0;
     animation: cardFadeIn 0.5s ease forwards;
+    cursor: pointer;
 }
 
 .bg-game-card:nth-child(1) {
@@ -424,26 +433,6 @@
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.3px;
-}
-
-.bg-game-comment {
-    padding: 12px 18px 18px;
-    margin-top: 8px;
-    font-family: var(--font-body);
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    font-style: italic;
-    line-height: 1.5;
-    border-top: 1px solid rgba(255, 143, 0, 0.08);
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-}
-
-.bg-game-comment .comment-icon {
-    flex-shrink: 0;
-    font-size: 0.85rem;
-    margin-top: 1px;
 }
 
 .bg-game-card-info:last-child {

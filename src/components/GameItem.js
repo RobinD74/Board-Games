@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import '../styles/GameItem.css';
 
 const difficultyColors = {
@@ -27,77 +28,72 @@ function GameItem({ game }) {
             : `${game.min_player_gam}`;
 
     return (
-        <div className="bg-game-card">
-            <div className="bg-game-image-area">
-                {game.image_gam ? (
-                    <img src={game.image_gam} alt={game.name_gam} className="bg-game-image" />
-                ) : (
-                    <div className="bg-game-image-placeholder">
-                        <span className="placeholder-icon">🎲</span>
+        <Link to={`/game/${game.id_gam}`} className="bg-game-card-link">
+            <div className="bg-game-card">
+                <div className="bg-game-image-area">
+                    {game.image_gam ? (
+                        <img src={game.image_gam} alt={game.name_gam} className="bg-game-image" />
+                    ) : (
+                        <div className="bg-game-image-placeholder">
+                            <span className="placeholder-icon">🎲</span>
+                        </div>
+                    )}
+                </div>
+
+                <div className="bg-game-header">
+                    <div className="bg-game-card-title">{game.name_gam}</div>
+                    <DifficultyBadge level={game.difficulty_gam} />
+                </div>
+
+                {genres.length > 0 && (
+                    <div className="bg-game-tags">
+                        {genres.map((tag, i) => (
+                            <span key={`genre-${i}`} className="bg-game-tag genre-tag">{tag}</span>
+                        ))}
+                        {subgenres.map((tag, i) => (
+                            <span key={`sub-${i}`} className="bg-game-tag subgenre-tag">{tag}</span>
+                        ))}
                     </div>
                 )}
-            </div>
 
-            <div className="bg-game-header">
-                <div className="bg-game-card-title">{game.name_gam}</div>
-                <DifficultyBadge level={game.difficulty_gam} />
-            </div>
-
-            {genres.length > 0 && (
-                <div className="bg-game-tags">
-                    {genres.map((tag, i) => (
-                        <span key={`genre-${i}`} className="bg-game-tag genre-tag">{tag}</span>
-                    ))}
-                    {subgenres.map((tag, i) => (
-                        <span key={`sub-${i}`} className="bg-game-tag subgenre-tag">{tag}</span>
-                    ))}
-                </div>
-            )}
-
-            <div className="bg-game-card-info">
-                <span>
-                    <span className="info-icon">👥</span>
-                    <span className="info-label">Joueurs</span>
-                    {playerRange}
-                </span>
-                <span>
-                    <span className="info-icon">⏱</span>
-                    <span className="info-label">Durée</span>
-                    {game.playtime_gam || '—'}
-                </span>
-                <span>
-                    <span className="info-icon">🎂</span>
-                    <span className="info-label">Âge</span>
-                    {game.minimum_age_gam ? `${game.minimum_age_gam}+` : '—'}
-                </span>
-                {game.language_gam && (
+                <div className="bg-game-card-info">
                     <span>
-                        <span className="info-icon">🌐</span>
-                        <span className="info-label">Langue</span>
-                        {game.language_gam}
+                        <span className="info-icon">👥</span>
+                        <span className="info-label">Joueurs</span>
+                        {playerRange}
                     </span>
-                )}
-                {game.publisher_gam && (
                     <span>
-                        <span className="info-icon">🏭</span>
-                        <span className="info-label">Éditeur</span>
-                        {game.publisher_gam}
+                        <span className="info-icon">⏱</span>
+                        <span className="info-label">Durée</span>
+                        {game.playtime_gam || '—'}
                     </span>
-                )}
-                <span>
-                    <span className="info-icon">👤</span>
-                    <span className="info-label">Proprio</span>
-                    {game.owner_gam}
-                </span>
-            </div>
-
-            {game.comment_gam && (
-                <div className="bg-game-comment">
-                    <span className="comment-icon">💬</span>
-                    {game.comment_gam}
+                    <span>
+                        <span className="info-icon">🎂</span>
+                        <span className="info-label">Âge</span>
+                        {game.minimum_age_gam ? `${game.minimum_age_gam}+` : '—'}
+                    </span>
+                    {game.language_gam && (
+                        <span>
+                            <span className="info-icon">🌐</span>
+                            <span className="info-label">Langue</span>
+                            {game.language_gam}
+                        </span>
+                    )}
+                    {game.publisher_gam && (
+                        <span>
+                            <span className="info-icon">🏭</span>
+                            <span className="info-label">Éditeur</span>
+                            {game.publisher_gam}
+                        </span>
+                    )}
+                    <span>
+                        <span className="info-icon">👤</span>
+                        <span className="info-label">Proprio</span>
+                        {game.owner_gam}
+                    </span>
                 </div>
-            )}
-        </div>
+            </div>
+        </Link>
     );
 }
 

@@ -42,7 +42,6 @@ SHEET_COLUMNS = [
     "minimum_age_gam",
     "difficulty_gam",
     "language_gam",
-    "comment_gam",
     "image_gam",
     "publisher_gam",
     "owner_gam",
