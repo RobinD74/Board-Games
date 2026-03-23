@@ -153,7 +153,6 @@ function GameDetail() {
             {/* ── Commentaire ────────────────────────────────────────── */}
             <div className="gd-reviews-section">
                 <h2 className="gd-section-title">
-                    <span className="gd-section-icon"></span>
                     Commentaire
                     <span className="gd-reviews-count">{reviews.length}</span>
                 </h2>
@@ -177,7 +176,6 @@ function GameDetail() {
                     </div>
                 ) : (
                     <div className="gd-no-reviews">
-                        <span className="gd-no-reviews-icon">📝</span>
                         <p>Aucun commentaire pour le moment.</p>
                     </div>
                 )}
@@ -186,7 +184,6 @@ function GameDetail() {
             {/* ── Extensions (placeholder) ────────────────────── */}
             <div className="gd-extensions-section">
                 <h2 className="gd-section-title">
-                    <span className="gd-section-icon">🧩</span>
                     Extensions
                 </h2>
                 <div className="gd-extensions-placeholder">
