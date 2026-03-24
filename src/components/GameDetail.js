@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchGameById, fetchReviews } from '../datas/GameList';
+import { fetchGameById, fetchReviews, fetchExtensions } from '../datas/GameList';
 import sampleGames from '../datas/sampleGames';
 import '../styles/GameDetail.css';
 
@@ -23,16 +23,18 @@ function GameDetail() {
     const { id } = useParams();
     const [game, setGame] = useState(null);
     const [reviews, setReviews] = useState([]);
+    const [extensions, setExtensions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         setLoading(true);
-        Promise.all([fetchGameById(id), fetchReviews(id)])
-            .then(([gameData, reviewsData]) => {
+        Promise.all([fetchGameById(id), fetchReviews(id), fetchExtensions(id)])
+            .then(([gameData, reviewsData, extensionsData]) => {
                 const resolvedGame = gameData || sampleGames.find(g => String(g.id_gam) === String(id));
                 setGame(resolvedGame || null);
                 setReviews(reviewsData || []);
+                setExtensions(extensionsData || []);
                 setLoading(false);
             })
             .catch((err) => {
@@ -41,6 +43,7 @@ function GameDetail() {
                 if (fallback) {
                     setGame(fallback);
                     setReviews([]);
+                    setExtensions([]);
                     setLoading(false);
                 } else {
                     setError('Impossible de charger les détails du jeu.');
@@ -181,15 +184,32 @@ function GameDetail() {
                 )}
             </div>
 
-            {/* ── Extensions (placeholder) ────────────────────── */}
+            {/* ── Extensions ─────────────────────────────────────────── */}
             <div className="gd-extensions-section">
                 <h2 className="gd-section-title">
                     Extensions
+                    <span className="gd-reviews-count">{extensions.length}</span>
                 </h2>
-                <div className="gd-extensions-placeholder">
-                    <span className="gd-placeholder-emoji">🚧</span>
-                    <p>Bientôt disponible</p>
-                </div>
+
+                {extensions.length > 0 ? (
+                    <div className="gd-extensions-list">
+                        {extensions.map((ext) => (
+                            <div key={ext.id_ext} className="gd-extension-card">
+                                <div className="gd-extension-info">
+                                    <span className="gd-extension-name">{ext.name_ext}</span>
+                                    <span className="gd-extension-owner">
+                                        <span className="gd-extension-owner-icon">👤</span>
+                                        {ext.owner_ext}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="gd-no-extensions">
+                        <p>Aucune extension enregistrée.</p>
+                    </div>
+                )}
             </div>
         </section>
     );

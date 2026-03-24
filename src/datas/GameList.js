@@ -47,3 +47,20 @@ export async function fetchReviews(gameId) {
     }
     return data;
 }
+
+export async function fetchExtensions(gameId) {
+    if (!supabase) return [];
+
+    const { data, error } = await supabase
+        .from('extensions_ext')
+        .select('*')
+        .eq('game_id_ext', gameId)
+        .neq('has_been_deleted', true)
+        .order('name_ext', { ascending: true });
+
+    if (error) {
+        console.error('Error fetching extensions for game', gameId);
+        throw error;
+    }
+    return data;
+}

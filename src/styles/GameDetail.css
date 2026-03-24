@@ -81,6 +81,7 @@
         opacity: 0;
         transform: translateY(16px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -366,7 +367,56 @@
     animation: gdFadeIn 0.5s ease 0.25s both;
 }
 
-.gd-extensions-placeholder {
+.gd-extensions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.gd-extension-card {
+    background: var(--bg-surface);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 14px 20px;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.gd-extension-card:hover {
+    border-color: var(--glass-border-hover);
+    box-shadow: 0 0 16px rgba(255, 143, 0, 0.08);
+}
+
+.gd-extension-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.gd-extension-name {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.gd-extension-owner {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.gd-extension-owner-icon {
+    font-size: 0.75rem;
+}
+
+.gd-no-extensions {
     text-align: center;
     padding: 40px 20px;
     background: var(--bg-surface);
@@ -377,14 +427,7 @@
     font-size: 0.9rem;
 }
 
-.gd-placeholder-emoji {
-    font-size: 2rem;
-    display: block;
-    margin-bottom: 8px;
-    opacity: 0.5;
-}
-
-.gd-extensions-placeholder p {
+.gd-no-extensions p {
     margin: 0;
 }
 
