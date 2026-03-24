@@ -55,6 +55,7 @@ export async function fetchExtensions(gameId) {
         .from('extensions_ext')
         .select('*')
         .eq('game_id_ext', gameId)
+        .neq('has_been_deleted', false)
         .order('name_ext', { ascending: true });
 
     if (error) {

@@ -215,7 +215,7 @@ def transform_extensions(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def load_extensions_to_supabase(df: pd.DataFrame) -> None:
-    """Resolve game_name_ext → game_id_ext, then full-refresh extensions_ext."""
+    """Resolve game_name_ext → game_id_ext, then sync (diff-based) extensions_ext."""
     if df.empty:
         log.info("  Aucune extension à charger.")
         return
@@ -228,14 +228,14 @@ def load_extensions_to_supabase(df: pd.DataFrame) -> None:
     name_to_id = {row["name_gam"]: row["id_gam"] for row in games.data}
 
     # Resolve game names to IDs
-    records = []
+    sheet_records = []
     skipped = 0
     for _, row in df.iterrows():
         game_id = name_to_id.get(row["game_name_ext"])
         if game_id is None:
             skipped += 1
             continue
-        records.append({
+        sheet_records.append({
             "game_id_ext": game_id,
             "name_ext":    row["name_ext"],
             "owner_ext":   row["owner_ext"],
@@ -244,16 +244,47 @@ def load_extensions_to_supabase(df: pd.DataFrame) -> None:
     if skipped:
         log.warning(f"  {skipped} extension(s) ignorée(s) — jeu introuvable dans la base.")
 
-    if not records:
-        log.info("  Aucune extension valide à charger.")
-        return
+    # Build set of (game_id, name, owner) from the Sheet
+    sheet_set = {
+        (r["game_id_ext"], r["name_ext"], r["owner_ext"])
+        for r in sheet_records
+    }
 
-    # Full refresh: delete all existing extensions, then re-insert from Sheet
-    supabase.table("extensions_ext").delete().neq("id_ext", -1).execute()
-    log.info("  🗑️  Table extensions_ext vidée.")
+    # Fetch existing extensions from DB
+    existing = supabase.table("extensions_ext").select("id_ext, game_id_ext, name_ext, owner_ext, has_been_deleted").execute()
+    active_map = {
+        (row["game_id_ext"], row["name_ext"], row["owner_ext"]): row["id_ext"]
+        for row in existing.data if not row.get("has_been_deleted")
+    }
+    deleted_map = {
+        (row["game_id_ext"], row["name_ext"], row["owner_ext"]): row["id_ext"]
+        for row in existing.data if row.get("has_been_deleted")
+    }
 
-    supabase.table("extensions_ext").insert(records).execute()
-    log.info(f"  ✅ {len(records)} extension(s) insérée(s).")
+    # Diff: truly new rows (not in DB at all)
+    all_known = {**active_map, **deleted_map}
+    new_rows = [r for r in sheet_records if (r["game_id_ext"], r["name_ext"], r["owner_ext"]) not in all_known]
+
+    # Restore: was soft-deleted but reappeared in the sheet
+    restore_ids = [eid for key, eid in deleted_map.items() if key in sheet_set]
+
+    # Soft-delete: active in DB but removed from the sheet
+    soft_delete_ids = [eid for key, eid in active_map.items() if key not in sheet_set]
+
+    if new_rows:
+        supabase.table("extensions_ext").insert(new_rows).execute()
+        log.info(f"  ✅ {len(new_rows)} extension(s) insérée(s).")
+
+    if restore_ids:
+        supabase.table("extensions_ext").update({"has_been_deleted": False}).in_("id_ext", restore_ids).execute()
+        log.info(f"  ♻️  {len(restore_ids)} extension(s) restaurée(s).")
+
+    if soft_delete_ids:
+        supabase.table("extensions_ext").update({"has_been_deleted": True}).in_("id_ext", soft_delete_ids).execute()
+        log.info(f"  🗑️  {len(soft_delete_ids)} extension(s) marquée(s) comme supprimée(s).")
+
+    if not new_rows and not restore_ids and not soft_delete_ids:
+        log.info("  Aucune modification détectée pour les extensions.")
 
 
 # ═══════════════════════════════════════════════════════════════════
