@@ -60,6 +60,7 @@ EXT_SHEET_COLUMNS = [
     "game_name_ext",
     "name_ext",
     "owner_ext",
+    "description_ext",
 ]
 
 EXT_REQUIRED_COLUMNS = ["game_name_ext", "name_ext", "owner_ext"]
@@ -236,9 +237,10 @@ def load_extensions_to_supabase(df: pd.DataFrame) -> None:
             skipped += 1
             continue
         sheet_records.append({
-            "game_id_ext": game_id,
-            "name_ext":    row["name_ext"],
-            "owner_ext":   row["owner_ext"],
+            "game_id_ext":    game_id,
+            "name_ext":       row["name_ext"],
+            "owner_ext":      row["owner_ext"],
+            "description_ext": row.get("description_ext"),
         })
 
     if skipped:
