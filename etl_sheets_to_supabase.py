@@ -1,9 +1,3 @@
-"""
-ETL Pipeline : Google Sheets → Supabase
-Table cible : public.games_gam
-Schedulé via Github Actions (cron quotidien)
-"""
-
 import os
 import json
 import logging
@@ -11,6 +5,8 @@ import gspread
 import pandas as pd
 from supabase import create_client, Client
 from google.oauth2.service_account import Credentials
+
+# First we define the file to target, the secrets, the table and the required fields
 
 logging.basicConfig(
     level=logging.INFO,
@@ -42,7 +38,6 @@ SHEET_COLUMNS = [
     "minimum_age_gam",
     "difficulty_gam",
     "language_gam",
-    "comment_gam",
     "image_gam",
     "publisher_gam",
     "owner_gam",
@@ -60,7 +55,7 @@ REQUIRED_COLUMNS = [
 
 INTEGER_COLUMNS = ["min_player_gam", "max_player_gam", "minimum_age_gam"]
 
-
+# Then extract the data
 def extract_from_sheets() -> pd.DataFrame:
     log.info("Connexion à Google Sheets...")
     creds_dict = json.loads(GOOGLE_CREDS_JSON)
@@ -74,7 +69,7 @@ def extract_from_sheets() -> pd.DataFrame:
     log.info(f"  {len(df)} lignes extraites du Sheet.")
     return df
 
-
+# Then check if required columns are present, replace empty ones by none
 def transform(df: pd.DataFrame) -> pd.DataFrame:
     log.info("Transformation des données...")
 
@@ -106,7 +101,7 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
     log.info(f"  {len(df)} lignes prêtes à être chargées.")
     return df
 
-
+# game exists? update, insert
 def load_to_supabase(df: pd.DataFrame) -> None:
     if df.empty:
         log.info("  Aucune donnée à charger.")
