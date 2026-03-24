@@ -116,7 +116,7 @@
 }
 
 .bg-banner-separator {
-  width: 60px;
+  width: 15vw;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--amber-600), transparent);
   border: none;
