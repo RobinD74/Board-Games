@@ -236,11 +236,14 @@ def load_extensions_to_supabase(df: pd.DataFrame) -> None:
         if game_id is None:
             skipped += 1
             continue
+        desc = row.get("description_ext")
+        if pd.isna(desc) or desc == "":
+            desc = None
         sheet_records.append({
             "game_id_ext":    game_id,
             "name_ext":       row["name_ext"],
             "owner_ext":      row["owner_ext"],
-            "description_ext": row.get("description_ext"),
+            "description_ext": desc,
         })
 
     if skipped:
