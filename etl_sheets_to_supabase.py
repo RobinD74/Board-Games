@@ -60,6 +60,7 @@ EXT_SHEET_COLUMNS = [
     "game_name_ext",
     "name_ext",
     "owner_ext",
+    "description_ext",
 ]
 
 EXT_REQUIRED_COLUMNS = ["game_name_ext", "name_ext", "owner_ext"]
@@ -235,10 +236,14 @@ def load_extensions_to_supabase(df: pd.DataFrame) -> None:
         if game_id is None:
             skipped += 1
             continue
+        desc = row.get("description_ext")
+        if pd.isna(desc) or desc == "":
+            desc = None
         sheet_records.append({
-            "game_id_ext": game_id,
-            "name_ext":    row["name_ext"],
-            "owner_ext":   row["owner_ext"],
+            "game_id_ext":    game_id,
+            "name_ext":       row["name_ext"],
+            "owner_ext":      row["owner_ext"],
+            "description_ext": desc,
         })
 
     if skipped:
@@ -265,8 +270,25 @@ def load_extensions_to_supabase(df: pd.DataFrame) -> None:
     all_known = {**active_map, **deleted_map}
     new_rows = [r for r in sheet_records if (r["game_id_ext"], r["name_ext"], r["owner_ext"]) not in all_known]
 
-    # Restore: was soft-deleted but reappeared in the sheet
-    restore_ids = [eid for key, eid in deleted_map.items() if key in sheet_set]
+    # Build a lookup from sheet key → sheet data (for updates)
+    sheet_by_key = {
+        (r["game_id_ext"], r["name_ext"], r["owner_ext"]): r
+        for r in sheet_records
+    }
+
+    # Restore: was soft-deleted but reappeared in the sheet — update all fields
+    restore_rows = []
+    for key, eid in deleted_map.items():
+        if key in sheet_set:
+            row_data = {**sheet_by_key[key], "has_been_deleted": False}
+            restore_rows.append((eid, row_data))
+
+    # Update: active in DB and still in sheet — sync fields (e.g. description changed)
+    update_rows = []
+    for key, eid in active_map.items():
+        if key in sheet_set:
+            row_data = sheet_by_key[key]
+            update_rows.append((eid, row_data))
 
     # Soft-delete: active in DB but removed from the sheet
     soft_delete_ids = [eid for key, eid in active_map.items() if key not in sheet_set]
@@ -275,15 +297,21 @@ def load_extensions_to_supabase(df: pd.DataFrame) -> None:
         supabase.table("extensions_ext").insert(new_rows).execute()
         log.info(f"  ✅ {len(new_rows)} extension(s) insérée(s).")
 
-    if restore_ids:
-        supabase.table("extensions_ext").update({"has_been_deleted": False}).in_("id_ext", restore_ids).execute()
-        log.info(f"  ♻️  {len(restore_ids)} extension(s) restaurée(s).")
+    for eid, row_data in restore_rows:
+        supabase.table("extensions_ext").update(row_data).eq("id_ext", eid).execute()
+    if restore_rows:
+        log.info(f"  ♻️  {len(restore_rows)} extension(s) restaurée(s).")
+
+    for eid, row_data in update_rows:
+        supabase.table("extensions_ext").update(row_data).eq("id_ext", eid).execute()
+    if update_rows:
+        log.info(f"  🔄 {len(update_rows)} extension(s) mise(s) à jour.")
 
     if soft_delete_ids:
         supabase.table("extensions_ext").update({"has_been_deleted": True}).in_("id_ext", soft_delete_ids).execute()
         log.info(f"  🗑️  {len(soft_delete_ids)} extension(s) marquée(s) comme supprimée(s).")
 
-    if not new_rows and not restore_ids and not soft_delete_ids:
+    if not new_rows and not restore_rows and not update_rows and not soft_delete_ids:
         log.info("  Aucune modification détectée pour les extensions.")
 
 

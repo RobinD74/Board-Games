@@ -2,8 +2,6 @@
 
 A premium web application to browse and filter a personal collection of board games. Built with a focus on aesthetics and automated data management.
 
-![Preview](https://raw.githubusercontent.com/RobinD74/Board-Games/main/public/dice.png)
-
 ## Features
 
 - **Premium UI**: Dark mode experience with glassmorphism, smooth animations, and modern typography.

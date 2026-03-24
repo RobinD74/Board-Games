@@ -202,6 +202,9 @@ function GameDetail() {
                                         {ext.owner_ext}
                                     </span>
                                 </div>
+                                {ext.description_ext && (
+                                    <p className="gd-extension-desc">{ext.description_ext}</p>
+                                )}
                             </div>
                         ))}
                     </div>

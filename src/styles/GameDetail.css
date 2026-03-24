@@ -416,6 +416,14 @@
     font-size: 0.75rem;
 }
 
+.gd-extension-desc {
+    margin: 8px 0 0;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
 .gd-no-extensions {
     text-align: center;
     padding: 40px 20px;
