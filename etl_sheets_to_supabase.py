@@ -215,7 +215,7 @@ def transform_extensions(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def load_extensions_to_supabase(df: pd.DataFrame) -> None:
-    """Resolve game_name_ext → game_id_ext, then upsert into extensions_ext."""
+    """Resolve game_name_ext → game_id_ext, then full-refresh extensions_ext."""
     if df.empty:
         log.info("  Aucune extension à charger.")
         return
@@ -248,30 +248,12 @@ def load_extensions_to_supabase(df: pd.DataFrame) -> None:
         log.info("  Aucune extension valide à charger.")
         return
 
-    # Fetch existing extensions to determine inserts vs updates
-    existing = supabase.table("extensions_ext").select("game_id_ext, name_ext, owner_ext").execute()
-    existing_set = {
-        (row["game_id_ext"], row["name_ext"], row["owner_ext"])
-        for row in existing.data
-    }
+    # Full refresh: delete all existing extensions, then re-insert from Sheet
+    supabase.table("extensions_ext").delete().neq("id_ext", -1).execute()
+    log.info("  🗑️  Table extensions_ext vidée.")
 
-    new_rows    = []
-    update_rows = []
-    for row in records:
-        key = (row["game_id_ext"], row["name_ext"], row["owner_ext"])
-        if key in existing_set:
-            update_rows.append(row)
-        else:
-            new_rows.append(row)
-
-    if new_rows:
-        supabase.table("extensions_ext").insert(new_rows).execute()
-        log.info(f"  ✅ {len(new_rows)} extension(s) insérée(s).")
-    if update_rows:
-        log.info(f"  ⏭️  {len(update_rows)} extension(s) déjà à jour.")
-
-    if not new_rows and not update_rows:
-        log.info("  Aucune modification détectée pour les extensions.")
+    supabase.table("extensions_ext").insert(records).execute()
+    log.info(f"  ✅ {len(records)} extension(s) insérée(s).")
 
 
 # ═══════════════════════════════════════════════════════════════════
