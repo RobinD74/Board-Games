@@ -17,7 +17,6 @@ const sampleGames = [
         language_gam: 'Français',
         publisher_gam: 'Kosmos',
         owner_gam: 'Robin',
-        comment_gam: 'Un classique incontournable pour les soirées entre amis.',
     },
     {
         id_gam: 2,
@@ -37,7 +36,6 @@ const sampleGames = [
         language_gam: 'Français',
         publisher_gam: 'Plan B Games',
         owner_gam: 'Robin',
-        comment_gam: 'Magnifique et accessible, parfait en famille.',
     },
     {
         id_gam: 3,
@@ -57,7 +55,6 @@ const sampleGames = [
         language_gam: 'Français',
         publisher_gam: 'Intrafin',
         owner_gam: 'Robin',
-        comment_gam: 'Un jeu profond avec une rejouabilité énorme.',
     },
     {
         id_gam: 4,
@@ -77,7 +74,6 @@ const sampleGames = [
         language_gam: 'Français',
         publisher_gam: 'Czech Games Edition',
         owner_gam: 'Robin',
-        comment_gam: null,
     },
     {
         id_gam: 5,
@@ -97,7 +93,6 @@ const sampleGames = [
         language_gam: 'Anglais',
         publisher_gam: 'Cephalofair Games',
         owner_gam: 'Robin',
-        comment_gam: 'Expérience immersive de donjon avec une campagne captivante.',
     },
     {
         id_gam: 6,
@@ -117,7 +112,6 @@ const sampleGames = [
         language_gam: 'Français',
         publisher_gam: 'Repos Production',
         owner_gam: 'Robin',
-        comment_gam: 'Un jeu de draft élégant qui s\'apprend vite.',
     },
     {
         id_gam: 7,
@@ -137,7 +131,6 @@ const sampleGames = [
         language_gam: 'Français',
         publisher_gam: 'Libellud',
         owner_gam: 'Robin',
-        comment_gam: 'Des illustrations magnifiques, parfait pour jouer en famille.',
     },
     {
         id_gam: 8,
@@ -157,7 +150,6 @@ const sampleGames = [
         language_gam: 'Français',
         publisher_gam: 'Z-Man Games',
         owner_gam: 'Robin',
-        comment_gam: null,
     },
 ];
 

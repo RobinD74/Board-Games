@@ -1,9 +1,3 @@
-"""
-ETL Pipeline : Google Sheets → Supabase
-Table cible : public.games_gam
-Schedulé via Github Actions (cron quotidien)
-"""
-
 import os
 import json
 import logging
@@ -11,6 +5,8 @@ import gspread
 import pandas as pd
 from supabase import create_client, Client
 from google.oauth2.service_account import Credentials
+
+# First we define the file to target, the secrets, the table and the required fields
 
 logging.basicConfig(
     level=logging.INFO,
@@ -42,7 +38,6 @@ SHEET_COLUMNS = [
     "minimum_age_gam",
     "difficulty_gam",
     "language_gam",
-    "comment_gam",
     "image_gam",
     "publisher_gam",
     "owner_gam",
@@ -60,7 +55,22 @@ REQUIRED_COLUMNS = [
 
 INTEGER_COLUMNS = ["min_player_gam", "max_player_gam", "minimum_age_gam"]
 
+# ── Extensions tab config ──────────────────────────────────────────
+EXT_SHEET_COLUMNS = [
+    "game_name_ext",
+    "name_ext",
+    "owner_ext",
+    "description_ext",
+]
 
+EXT_REQUIRED_COLUMNS = ["game_name_ext", "name_ext", "owner_ext"]
+
+
+# ═══════════════════════════════════════════════════════════════════
+#  GAMES pipeline
+# ═══════════════════════════════════════════════════════════════════
+
+# Then extract the data
 def extract_from_sheets() -> pd.DataFrame:
     log.info("Connexion à Google Sheets...")
     creds_dict = json.loads(GOOGLE_CREDS_JSON)
@@ -74,7 +84,7 @@ def extract_from_sheets() -> pd.DataFrame:
     log.info(f"  {len(df)} lignes extraites du Sheet.")
     return df
 
-
+# Then check if required columns are present, replace empty ones by none
 def transform(df: pd.DataFrame) -> pd.DataFrame:
     log.info("Transformation des données...")
 
@@ -106,7 +116,7 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
     log.info(f"  {len(df)} lignes prêtes à être chargées.")
     return df
 
-
+# game exists? update, insert
 def load_to_supabase(df: pd.DataFrame) -> None:
     if df.empty:
         log.info("  Aucune donnée à charger.")
@@ -120,7 +130,7 @@ def load_to_supabase(df: pd.DataFrame) -> None:
         for row in existing.data
     }
 
-    df = df.drop(columns=["id_gam"], errors="ignore")
+    df = df.drop(columns=["id_gam", "image_gam"], errors="ignore")
 
     df = df.astype(object).where(pd.notnull(df), None)
     records = df.to_dict(orient="records")
@@ -152,11 +162,176 @@ def load_to_supabase(df: pd.DataFrame) -> None:
         log.info("  Aucune modification détectée.")
 
 
+# ═══════════════════════════════════════════════════════════════════
+#  EXTENSIONS pipeline
+# ═══════════════════════════════════════════════════════════════════
+
+def extract_extensions() -> pd.DataFrame:
+    """Extract data from the 'Extensions' tab (2nd sheet)."""
+    log.info("Extraction des extensions depuis le Sheet...")
+    creds_dict = json.loads(GOOGLE_CREDS_JSON)
+    creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
+    client = gspread.authorize(creds)
+
+    spreadsheet = client.open_by_key(SHEET_ID)
+    try:
+        ext_sheet = spreadsheet.worksheet("Extensions")
+    except gspread.exceptions.WorksheetNotFound:
+        log.warning("  Onglet 'Extensions' introuvable — étape ignorée.")
+        return pd.DataFrame(columns=EXT_SHEET_COLUMNS)
+
+    records = ext_sheet.get_all_records(expected_headers=EXT_SHEET_COLUMNS)
+    df = pd.DataFrame(records)
+    log.info(f"  {len(df)} lignes extraites de l'onglet Extensions.")
+    return df
+
+
+def transform_extensions(df: pd.DataFrame) -> pd.DataFrame:
+    """Clean and validate extension rows."""
+    log.info("Transformation des extensions...")
+
+    if df.empty or not all(col in df.columns for col in EXT_REQUIRED_COLUMNS):
+        log.warning("  Onglet Extensions vide ou colonnes manquantes.")
+        return pd.DataFrame(columns=EXT_SHEET_COLUMNS)
+
+    df = df.replace("", None)
+
+    before = len(df)
+    df = df.dropna(subset=EXT_REQUIRED_COLUMNS)
+    dropped = before - len(df)
+    if dropped:
+        log.warning(f"  {dropped} extension(s) ignorée(s) — champs obligatoires manquants.")
+
+    str_cols = df.select_dtypes(include=["object", "str"]).columns
+    df[str_cols] = df[str_cols].apply(lambda c: c.map(lambda x: x.strip() if isinstance(x, str) else x))
+
+    before = len(df)
+    df = df.drop_duplicates(subset=["game_name_ext", "name_ext", "owner_ext"], keep="last")
+    dupes = before - len(df)
+    if dupes:
+        log.warning(f"  {dupes} doublon(s) supprimé(s) dans les extensions.")
+
+    log.info(f"  {len(df)} extension(s) prête(s) à être chargées.")
+    return df
+
+
+def load_extensions_to_supabase(df: pd.DataFrame) -> None:
+    """Resolve game_name_ext → game_id_ext, then sync (diff-based) extensions_ext."""
+    if df.empty:
+        log.info("  Aucune extension à charger.")
+        return
+
+    log.info("Chargement des extensions dans Supabase...")
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+    # Build a lookup: game name → id_gam
+    games = supabase.table("games_gam").select("id_gam, name_gam").execute()
+    name_to_id = {row["name_gam"]: row["id_gam"] for row in games.data}
+
+    # Resolve game names to IDs
+    sheet_records = []
+    skipped = 0
+    for _, row in df.iterrows():
+        game_id = name_to_id.get(row["game_name_ext"])
+        if game_id is None:
+            skipped += 1
+            continue
+        desc = row.get("description_ext")
+        if pd.isna(desc) or desc == "":
+            desc = None
+        sheet_records.append({
+            "game_id_ext":    game_id,
+            "name_ext":       row["name_ext"],
+            "owner_ext":      row["owner_ext"],
+            "description_ext": desc,
+        })
+
+    if skipped:
+        log.warning(f"  {skipped} extension(s) ignorée(s) — jeu introuvable dans la base.")
+
+    # Build set of (game_id, name, owner) from the Sheet
+    sheet_set = {
+        (r["game_id_ext"], r["name_ext"], r["owner_ext"])
+        for r in sheet_records
+    }
+
+    # Fetch existing extensions from DB
+    existing = supabase.table("extensions_ext").select("id_ext, game_id_ext, name_ext, owner_ext, has_been_deleted").execute()
+    active_map = {
+        (row["game_id_ext"], row["name_ext"], row["owner_ext"]): row["id_ext"]
+        for row in existing.data if not row.get("has_been_deleted")
+    }
+    deleted_map = {
+        (row["game_id_ext"], row["name_ext"], row["owner_ext"]): row["id_ext"]
+        for row in existing.data if row.get("has_been_deleted")
+    }
+
+    # Diff: truly new rows (not in DB at all)
+    all_known = {**active_map, **deleted_map}
+    new_rows = [r for r in sheet_records if (r["game_id_ext"], r["name_ext"], r["owner_ext"]) not in all_known]
+
+    # Build a lookup from sheet key → sheet data (for updates)
+    sheet_by_key = {
+        (r["game_id_ext"], r["name_ext"], r["owner_ext"]): r
+        for r in sheet_records
+    }
+
+    # Restore: was soft-deleted but reappeared in the sheet — update all fields
+    restore_rows = []
+    for key, eid in deleted_map.items():
+        if key in sheet_set:
+            row_data = {**sheet_by_key[key], "has_been_deleted": False}
+            restore_rows.append((eid, row_data))
+
+    # Update: active in DB and still in sheet — sync fields (e.g. description changed)
+    update_rows = []
+    for key, eid in active_map.items():
+        if key in sheet_set:
+            row_data = sheet_by_key[key]
+            update_rows.append((eid, row_data))
+
+    # Soft-delete: active in DB but removed from the sheet
+    soft_delete_ids = [eid for key, eid in active_map.items() if key not in sheet_set]
+
+    if new_rows:
+        supabase.table("extensions_ext").insert(new_rows).execute()
+        log.info(f"  ✅ {len(new_rows)} extension(s) insérée(s).")
+
+    for eid, row_data in restore_rows:
+        supabase.table("extensions_ext").update(row_data).eq("id_ext", eid).execute()
+    if restore_rows:
+        log.info(f"  ♻️  {len(restore_rows)} extension(s) restaurée(s).")
+
+    for eid, row_data in update_rows:
+        supabase.table("extensions_ext").update(row_data).eq("id_ext", eid).execute()
+    if update_rows:
+        log.info(f"  🔄 {len(update_rows)} extension(s) mise(s) à jour.")
+
+    if soft_delete_ids:
+        supabase.table("extensions_ext").update({"has_been_deleted": True}).in_("id_ext", soft_delete_ids).execute()
+        log.info(f"  🗑️  {len(soft_delete_ids)} extension(s) marquée(s) comme supprimée(s).")
+
+    if not new_rows and not restore_rows and not update_rows and not soft_delete_ids:
+        log.info("  Aucune modification détectée pour les extensions.")
+
+
+# ═══════════════════════════════════════════════════════════════════
+#  Main
+# ═══════════════════════════════════════════════════════════════════
+
 def main():
     log.info("=== Démarrage de la pipeline ETL ===")
+
+    # Games
     df = extract_from_sheets()
     df = transform(df)
     load_to_supabase(df)
+
+    # Extensions
+    ext_df = extract_extensions()
+    ext_df = transform_extensions(ext_df)
+    load_extensions_to_supabase(ext_df)
+
     log.info("=== Pipeline terminée avec succès ===")
 
 

@@ -2,23 +2,21 @@
 
 A premium web application to browse and filter a personal collection of board games. Built with a focus on aesthetics and automated data management.
 
-![Preview](https://raw.githubusercontent.com/RobinD74/Board-Games/main/public/dice.png)
-
-## ✨ Features
+## Features
 
 - **Premium UI**: Dark mode experience with glassmorphism, smooth animations, and modern typography.
 - **Smart Filtering**: Search by name and filter by difficulty or genre.
 - **Automated ETL**: Daily synchronization from Google Sheets to Supabase via GitHub Actions.
 - **Secure by Design**: Implemented Row Level Security (RLS) and strict Content Security Policy (CSP).
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Frontend**: React 19, Vanilla CSS (Custom Design System)
 - **Backend**: Supabase (PostgreSQL + Auth/RLS)
 - **Automation**: Python 3.11, GitHub Actions, Google Sheets API
 - **Deployment**: Vercel
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js & npm
@@ -45,7 +43,7 @@ A premium web application to browse and filter a personal collection of board ga
    npm start
    ```
 
-## 🔄 Data Pipeline (ETL)
+## Data Pipeline (ETL)
 
 The project includes a Python-based ETL pipeline (`etl_sheets_to_supabase.py`) that:
 1. **Extracts** data from a Google Sheet.
@@ -54,11 +52,10 @@ The project includes a Python-based ETL pipeline (`etl_sheets_to_supabase.py`) t
 
 This runs automatically every day at 06:00 UTC via GitHub Actions.
 
-## 🛡 Security
+## Security
 
 - **CSP**: Strict headers configured in `vercel.json`.
 - **RLS**: Database access restricted to read-only for anonymous users.
 - **Audit**: Regular security checks performed on dependencies and code patterns.
 
 ---
-Made with ❤️ by [Robin](https://github.com/RobinD74)
