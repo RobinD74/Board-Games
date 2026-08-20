@@ -5,6 +5,10 @@ on:
     - cron: "0 6 * * *"   # Tous les jours à 6h00 UTC (8h Paris)
   workflow_dispatch:        # Déclenchement manuel possible depuis Github
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   etl:
     runs-on: ubuntu-latest
@@ -20,7 +24,7 @@ jobs:
 
       - name: Installer les dépendances
         run: |
-          pip install gspread pandas supabase google-auth
+          pip install gspread pandas supabase google-auth tenacity
 
       - name: Lancer la pipeline ETL
         env:
@@ -30,3 +34,37 @@ jobs:
           GOOGLE_CREDENTIALS_JSON:  ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
         run: |
           python etl_sheets_to_supabase.py
+
+      - name: Notifier en cas d'échec
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const label = "pipeline-failure";
+            const title = "ETL pipeline failed";
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = `The ETL pipeline failed on ${new Date().toISOString()} after exhausting retries.\n\nSee the run log: ${runUrl}`;
+
+            const { data: openIssues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              labels: label,
+            });
+
+            if (openIssues.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: openIssues[0].number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: [label],
+              });
+            }

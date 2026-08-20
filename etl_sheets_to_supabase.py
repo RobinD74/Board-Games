@@ -5,6 +5,7 @@ import gspread
 import pandas as pd
 from supabase import create_client, Client
 from google.oauth2.service_account import Credentials
+from tenacity import retry, stop_after_attempt, wait_exponential, before_sleep_log
 
 # First we define the file to target, the secrets, the table and the required fields
 
@@ -13,6 +14,15 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(message)s"
 )
 log = logging.getLogger(__name__)
+
+# Retry transient errors (network hiccups, API rate limits) up to 3 times
+# with exponential backoff before letting the pipeline fail for good.
+io_retry = retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=2, min=2, max=30),
+    reraise=True,
+    before_sleep=before_sleep_log(log, logging.WARNING),
+)
 
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets.readonly",
@@ -71,6 +81,7 @@ EXT_REQUIRED_COLUMNS = ["game_name_ext", "name_ext", "owner_ext"]
 # ═══════════════════════════════════════════════════════════════════
 
 # Then extract the data
+@io_retry
 def extract_from_sheets() -> pd.DataFrame:
     log.info("Connexion à Google Sheets...")
     creds_dict = json.loads(GOOGLE_CREDS_JSON)
@@ -117,6 +128,7 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 # game exists? update, insert
+@io_retry
 def load_to_supabase(df: pd.DataFrame) -> None:
     if df.empty:
         log.info("  Aucune donnée à charger.")
@@ -166,6 +178,7 @@ def load_to_supabase(df: pd.DataFrame) -> None:
 #  EXTENSIONS pipeline
 # ═══════════════════════════════════════════════════════════════════
 
+@io_retry
 def extract_extensions() -> pd.DataFrame:
     """Extract data from the 'Extensions' tab (2nd sheet)."""
     log.info("Extraction des extensions depuis le Sheet...")
@@ -215,6 +228,7 @@ def transform_extensions(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+@io_retry
 def load_extensions_to_supabase(df: pd.DataFrame) -> None:
     """Resolve game_name_ext → game_id_ext, then sync (diff-based) extensions_ext."""
     if df.empty:
