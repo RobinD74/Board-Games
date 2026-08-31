@@ -1,5 +1,8 @@
 name: ETL Google Sheets → Supabase
 
+permissions:
+  contents: read
+
 on:
   schedule:
     - cron: "0 6 * * *"   # Tous les jours à 6h00 UTC (8h Paris)
